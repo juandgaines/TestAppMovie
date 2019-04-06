@@ -17,19 +17,29 @@ public interface FavoritesDao {
     @Query("SELECT * FROM favorites ORDER BY id")
     LiveData<List<MovieData>> loadAllFavoritesMovies();
 
+    @Query("SELECT * FROM cache_data WHERE category=:category")
+    LiveData<List<CacheMovieData>> loadAllCacheMovies(String category);
+
     @Query("SELECT * FROM favorites WHERE movie_id=:id")
     LiveData<MovieData> loadFavoriteItemByName(int id);
 
+    @Query("SELECT * FROM cache_data WHERE movie_id=:id")
+    CacheMovieData loadCacheItemByName(int id);
+
     @Insert
-    void insertFavoriteMovie(MovieData movieData);
+    public void insertFavoriteMovie(MovieData movieData);
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    public void insertMovieOnCache(CacheMovieData movieCache);
+
 
     @Update(onConflict = OnConflictStrategy.REPLACE)
-    void updateFavoriteMovie(MovieData movieData);
+    public void updateFavoriteMovie(MovieData movieData);
 
     @Delete
-    void deleteFavoriteMovie(MovieData movieData);
+    public void deleteFavoriteMovie(MovieData movieData);
 
     @Query("DELETE FROM favorites")
-    void deleteAll();
+    public void deleteAll();
 
 }

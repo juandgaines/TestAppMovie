@@ -33,9 +33,14 @@ public class CacheMovieData  implements Parcelable {
     @ColumnInfo(name = "release")
     private String release;
 
+    @ColumnInfo(name="category")
+    private String category;
+
     public static  final String PARCELABLE="parcelable";
 
-    public CacheMovieData(int id, int movie_id, Double rate, String title, String path,String overview,String release){
+
+
+    public CacheMovieData(int id, int movie_id, Double rate, String title, String path,String overview,String release,String category){
 
         this.id=id;
         this.movie_id=movie_id;
@@ -44,6 +49,7 @@ public class CacheMovieData  implements Parcelable {
         this.path=path;
         this.overview=overview;
         this.release=release;
+        this.category=category;
 
 
     }
@@ -51,7 +57,7 @@ public class CacheMovieData  implements Parcelable {
     public CacheMovieData(){}
 
     @Ignore
-    public  CacheMovieData( int movie_id, Double rate, String title, String path,String overview,String release){
+    public  CacheMovieData( int movie_id, Double rate, String title, String path,String overview,String release,String category){
 
         this.title=title;
         this.overview=overview;
@@ -59,6 +65,7 @@ public class CacheMovieData  implements Parcelable {
         this.release=release;
         this.path=path;
         this.movie_id=movie_id;
+        this.category=category;
 
 
     }
@@ -72,9 +79,17 @@ public class CacheMovieData  implements Parcelable {
         path=parcel.readString();
         rate=Double.parseDouble(parcel.readString()) ;
         release=parcel.readString();
+        category=parcel.readString();
 
     }
 
+    public String getCategory() {
+        return category;
+    }
+
+    public void setCategory(String category) {
+        this.category = category;
+    }
 
     public int getMovie_id(){return movie_id;}
 
@@ -145,6 +160,7 @@ public class CacheMovieData  implements Parcelable {
         dest.writeString(path);
         dest.writeString(Double.toString(rate));
         dest.writeString(release);
+        dest.writeString(category);
     }
     //constructor used for parcel
 
@@ -173,7 +189,8 @@ public class CacheMovieData  implements Parcelable {
                 .append("Overview: "+overview+"\n")
                 .append("Path: "+path+"\n")
                 .append("Rate: "+rate+"\n")
-                .append("Release: "+release+"\n");
+                .append("Release: "+release+"\n")
+                .append("Category:"+release+"\n");
 
         return movieString.toString();
     }

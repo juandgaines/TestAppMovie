@@ -50,6 +50,26 @@ public class Result {
     @Expose
     private String releaseDate;
 
+    public  Result( Integer movie_id, Double rate, String title, String path,String overview,String release){
+
+        this.id=movie_id;
+        this.voteAverage=rate;
+        this.title=title;
+        this.posterPath=path;
+        this.overview=overview;
+        this.releaseDate=release;
+        this.adult=null;
+        this.backdropPath=null;
+        this.originalTitle=null;
+        this.originalLanguage=null;
+        this.popularity=null;
+        this.video=null;
+
+
+
+
+    }
+
     public Integer getVoteCount() {
         return voteCount;
     }
@@ -163,4 +183,8 @@ public class Result {
     }
 
 
+    @Override
+    public String toString() {
+        return "id"+id;
+    }
 }

@@ -9,12 +9,15 @@ import android.support.annotation.NonNull;
 import android.util.Log;
 
 import com.example.android.popularmoviesapp.data.AppDatabase;
+import com.example.android.popularmoviesapp.data.AppExecutors;
+import com.example.android.popularmoviesapp.data.CacheMovieData;
 import com.example.android.popularmoviesapp.data.MovieData;
 import com.example.android.popularmoviesapp.data.Result;
 import com.example.android.popularmoviesapp.data.Results;
 import com.example.android.popularmoviesapp.network.MovieService;
 import com.example.android.popularmoviesapp.network.RetroClassMainListView;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import retrofit2.Call;
@@ -22,15 +25,21 @@ import retrofit2.Callback;
 import retrofit2.Response;
 
 public class FetchViewModel extends AndroidViewModel {
+    private static  final  String LOG_TAG=FetchViewModel.class.getSimpleName();
     private static final String API_KEY = BuildConfig.OPEN_THE_MOVIE_DB_API_KEY;
     private MutableLiveData<List<Result>> resultsLiveData;
     private MutableLiveData<BooleanJ> mNetworkProblem;
     private LiveData<List<MovieData>> resultsLiveDataDB;
+    private LiveData<List<CacheMovieData>> mCacheListMovies;
+
+    private  AppDatabase database;
+
 
     public FetchViewModel(@NonNull Application application) {
         super(application);
-        AppDatabase database=AppDatabase.getsInstance(this.getApplication());
+        database=AppDatabase.getsInstance(this.getApplication());
         resultsLiveDataDB=database.favoritesDao().loadAllFavoritesMovies();
+
     }
 
 
@@ -49,6 +58,7 @@ public class FetchViewModel extends AndroidViewModel {
             loadLiveData(pref);
         }
 
+
         return resultsLiveData;
     }
 
@@ -58,7 +68,7 @@ public class FetchViewModel extends AndroidViewModel {
         }
     }
 
-    public void loadLiveData(String pref){
+    public void loadLiveData(final String pref){
 
         MovieService movieService= RetroClassMainListView.getMovieService();
         initNetLiveData();
@@ -72,7 +82,45 @@ public class FetchViewModel extends AndroidViewModel {
 
                     Log.v("Retrofit", response.toString());
                     List<Result> res = response.body().getResults();
+
+
+
+                    for (final Result cacheMovies:res){
+
+                        //int movie_id, Double rate, String title, String path,String overview,String release,String category)
+                        final int movie_id=cacheMovies.getId().intValue();
+
+
+                        AppExecutors.getsInstance().diskIO().execute(new Runnable() {
+                            @Override
+                            public void run() {
+                                CacheMovieData co=database.favoritesDao().loadCacheItemByName(movie_id);
+                                if (co==null) {
+
+                                    Double rate = cacheMovies.getVoteAverage();
+                                    String title = cacheMovies.getTitle();
+                                    String path = cacheMovies.getPosterPath();
+                                    String overview = cacheMovies.getOverview();
+                                    String release = cacheMovies.getReleaseDate();
+                                    String category = pref;
+                                    final CacheMovieData bufferObject=  new CacheMovieData(movie_id,rate,title,path,overview,release,category);
+                                    Log.d(LOG_TAG,"Inserted on Database:"+bufferObject.toString());
+                                    database.favoritesDao().insertMovieOnCache(bufferObject);
+
+                                }
+
+
+                            }
+                        });
+
+
+
+
+
+
+                    }
                     resultsLiveData.setValue(res);
+
 
                     BooleanJ booleanJ = new BooleanJ();
                     booleanJ.setStatus(false);
@@ -93,6 +141,16 @@ public class FetchViewModel extends AndroidViewModel {
         else{
 
         }
+
+
+    }
+
+    public LiveData<List<CacheMovieData>> loadLiveDataFromCache(final String pref){
+
+
+        mCacheListMovies= database.favoritesDao().loadAllCacheMovies(pref);
+
+        return mCacheListMovies;
 
 
     }
