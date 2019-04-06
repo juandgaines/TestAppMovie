@@ -47,6 +47,7 @@ public class CacheMovieData  implements Parcelable {
 
 
     }
+    @Ignore
     public CacheMovieData(){
 
     }
@@ -131,6 +132,7 @@ public class CacheMovieData  implements Parcelable {
         dest.writeString(releaseDate);
     }
     //constructor used for parcel
+    @Ignore
     public CacheMovieData(Parcel parcel){
         //read and set saved values from parcel
         movieId=Integer.parseInt(parcel.readString());

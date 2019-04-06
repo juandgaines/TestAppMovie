@@ -46,6 +46,7 @@ public class Trailers implements Parcelable {
 
 
     }
+    @Ignore
     public Trailers(){
 
     }
@@ -157,6 +158,7 @@ public class Trailers implements Parcelable {
         dest.writeString(type);
     }
     //constructor used for parcel
+    @Ignore
     public Trailers(Parcel parcel){
         //read and set saved values from parcel
         id_movie=parcel.readString();
