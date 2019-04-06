@@ -7,8 +7,11 @@ import android.support.v7.preference.ListPreference;
 import android.support.v7.preference.Preference;
 import android.support.v7.preference.PreferenceFragmentCompat;
 import android.support.v7.preference.PreferenceScreen;
+import android.util.Log;
 
 public class SettingsFragment extends PreferenceFragmentCompat implements SharedPreferences.OnSharedPreferenceChangeListener{
+
+    public static final String LOG_TAG= SettingsFragment.class.getSimpleName();
     @Override
     public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
 
@@ -33,6 +36,8 @@ public class SettingsFragment extends PreferenceFragmentCompat implements Shared
 
             if(!(preference instanceof CheckBoxPreference)){
                 String value=sharedPreferences.getString(preference.getKey(),"");
+
+                Log.d(LOG_TAG,"Preference:"+value);
                 setPreferenceSummary(preference,value);
 
             }

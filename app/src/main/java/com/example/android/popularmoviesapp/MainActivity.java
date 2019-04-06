@@ -94,7 +94,8 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
 
         Resources res = getResources();
         String[] moviesValues = res.getStringArray(R.array.pref_order_peliculas_values);
-        String value= moviesValues[2];
+        String value= moviesValues[3];
+        Log.d(LOG_TAG,"Que es :"+ syncConnPref + "=="+ value);
 
         if(!syncConnPref.equals(value)) {
             mErrorMessage.setVisibility(View.INVISIBLE);
@@ -105,7 +106,6 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
         else{
             mErrorMessage.setVisibility(View.INVISIBLE);
             mRecyclerView.setVisibility(View.GONE);
-
             mRecyclerView2.setVisibility(View.VISIBLE);
         }
 
@@ -245,7 +245,7 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
 
             Resources res = getResources();
             String[] moviesValues = res.getStringArray(R.array.pref_order_peliculas_values);
-            String value= moviesValues[2];
+            String value= moviesValues[3];
 
             if(!syncConnPref.equals(value)) {
                 mErrorMessage.setVisibility(View.INVISIBLE);
