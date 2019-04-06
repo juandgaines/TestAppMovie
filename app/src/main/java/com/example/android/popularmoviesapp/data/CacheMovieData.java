@@ -16,55 +16,70 @@ public class CacheMovieData  implements Parcelable {
     private int id;
 
     @ColumnInfo(name = "movie_id")
-    private int movieId;
+    private int movie_id;
 
     @ColumnInfo(name = "rate")
-    private Double voteAverage;
+    private Double rate;
 
     @ColumnInfo(name = "title")
     private String title;
 
     @ColumnInfo(name = "path")
-    private String posterPath;
+    private String path;
 
     @ColumnInfo(name = "overview")
     private String overview;
 
     @ColumnInfo(name = "release")
-    private String releaseDate;
+    private String release;
 
     public static  final String PARCELABLE="parcelable";
 
-    @Ignore
-    public  CacheMovieData(String Title,String Overview, double Rate,String Release, String Path, int movieId){
+    public CacheMovieData(int id, int movie_id, Double rate, String title, String path,String overview,String release){
 
-        this.title=Title;
-        this.overview=Overview;
-        this.voteAverage=Rate;
-        this.releaseDate=Release;
-        this.posterPath=Path;
-        this.movieId=movieId;
-
-
-    }
-    @Ignore
-    public CacheMovieData(){
-
-    }
-    public CacheMovieData(int id, String Title,String Overview, double Rate,String Release, String Path, int movieId){
         this.id=id;
-        this.title=Title;
-        this.overview=Overview;
-        this.voteAverage=Rate;
-        this.releaseDate=Release;
-        this.posterPath=Path;
-        this.movieId=movieId;
+        this.movie_id=movie_id;
+        this.rate=rate;
+        this.title=title;
+        this.path=path;
+        this.overview=overview;
+        this.release=release;
+
+
+    }
+    @Ignore
+    public CacheMovieData(){}
+
+    @Ignore
+    public  CacheMovieData( int movie_id, Double rate, String title, String path,String overview,String release){
+
+        this.title=title;
+        this.overview=overview;
+        this.rate=rate;
+        this.release=release;
+        this.path=path;
+        this.movie_id=movie_id;
+
+
     }
 
-    public int getMovieId(){return movieId;}
+    @Ignore
+    public CacheMovieData(Parcel parcel){
+        //read and set saved values from parcel
+        movie_id=Integer.parseInt(parcel.readString());
+        title= parcel.readString();
+        overview=parcel.readString();
+        path=parcel.readString();
+        rate=Double.parseDouble(parcel.readString()) ;
+        release=parcel.readString();
 
-    public void setMovieId(int id){
-        this.movieId=id;
+    }
+
+
+    public int getMovie_id(){return movie_id;}
+
+    public void setMovie_id(int id){
+        this.movie_id=id;
     }
 
     public int getId(){return id;}
@@ -74,12 +89,12 @@ public class CacheMovieData  implements Parcelable {
     }
 
 
-    public Double getVoteAverage() {
-        return voteAverage;
+    public Double getRate() {
+        return rate;
     }
 
-    public void setVoteAverage(Double voteAverage) {
-        this.voteAverage = voteAverage;
+    public void setRate(Double voteAverage) {
+        this.rate = voteAverage;
     }
 
     public String getTitle() {
@@ -91,12 +106,12 @@ public class CacheMovieData  implements Parcelable {
     }
 
 
-    public String getPosterPath() {
-        return posterPath;
+    public String getPath() {
+        return path;
     }
 
-    public void setPosterPath(String posterPath) {
-        this.posterPath = posterPath;
+    public void setPath(String posterPath) {
+        this.path = posterPath;
     }
 
 
@@ -108,12 +123,12 @@ public class CacheMovieData  implements Parcelable {
         this.overview = overview;
     }
 
-    public String getReleaseDate() {
-        return releaseDate;
+    public String getRelease() {
+        return release;
     }
 
-    public void setReleaseDate(String releaseDate) {
-        this.releaseDate = releaseDate;
+    public void setRelease(String releaseDate) {
+        this.release = releaseDate;
     }
 
 
@@ -124,25 +139,16 @@ public class CacheMovieData  implements Parcelable {
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
-        dest.writeString(Integer.toString(movieId));
+        dest.writeString(Integer.toString(movie_id));
         dest.writeString(title);
         dest.writeString(overview);
-        dest.writeString(posterPath);
-        dest.writeString(Double.toString(voteAverage));
-        dest.writeString(releaseDate);
+        dest.writeString(path);
+        dest.writeString(Double.toString(rate));
+        dest.writeString(release);
     }
     //constructor used for parcel
-    @Ignore
-    public CacheMovieData(Parcel parcel){
-        //read and set saved values from parcel
-        movieId=Integer.parseInt(parcel.readString());
-        title= parcel.readString();
-        overview=parcel.readString();
-        posterPath=parcel.readString();
-        voteAverage=Double.parseDouble(parcel.readString()) ;
-        releaseDate=parcel.readString();
 
-    }
+
 
     //creator - used when un-parceling our parcle (creating the object)
     public static final Parcelable.Creator<MovieData> CREATOR = new Parcelable.Creator<MovieData>(){
@@ -162,12 +168,12 @@ public class CacheMovieData  implements Parcelable {
     public String toString() {
         StringBuilder movieString=new StringBuilder("");
         movieString
-                .append("Id:"+movieId+"\n")
+                .append("Id:"+movie_id+"\n")
                 .append("Title: "+title+"\n")
                 .append("Overview: "+overview+"\n")
-                .append("Path: "+posterPath+"\n")
-                .append("Rate: "+voteAverage+"\n")
-                .append("Release: "+releaseDate+"\n");
+                .append("Path: "+path+"\n")
+                .append("Rate: "+rate+"\n")
+                .append("Release: "+release+"\n");
 
         return movieString.toString();
     }

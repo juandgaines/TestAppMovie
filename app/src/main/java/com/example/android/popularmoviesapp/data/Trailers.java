@@ -2,11 +2,12 @@ package com.example.android.popularmoviesapp.data;
 
 
 import android.arch.persistence.room.ColumnInfo;
+import android.arch.persistence.room.Entity;
 import android.arch.persistence.room.Ignore;
 import android.arch.persistence.room.PrimaryKey;
 import android.os.Parcel;
 import android.os.Parcelable;
-
+@Entity(tableName = "cache_trailers")
 public class Trailers implements Parcelable {
 
     @PrimaryKey(autoGenerate = true)
@@ -32,24 +33,7 @@ public class Trailers implements Parcelable {
     @ColumnInfo(name = "type")
     private String type;
 
-    @Ignore
-    public  Trailers(String id_movie,String iso6391,String iso31661, String key,String name, String site, Integer size,String type){
 
-        this.id_movie=id_movie;
-        this.iso6391=iso6391;
-        this.iso31661=iso31661;
-        this.key=key;
-        this.name=name;
-        this.site=site;
-        this.size=size;
-        this.type= type;
-
-
-    }
-    @Ignore
-    public Trailers(){
-
-    }
     public Trailers(int id, String id_movie,String iso6391,String iso31661, String key,String name, String site, Integer size,String type){
 
         this.id=id;
@@ -65,11 +49,32 @@ public class Trailers implements Parcelable {
 
     }
 
-    public String getMovieId() {
+    @Ignore
+    public Trailers(){
+
+    }
+    @Ignore
+    public  Trailers(String id_movie,String iso6391,String iso31661, String key,String name, String site, Integer size,String type){
+
+        this.id_movie=id_movie;
+        this.iso6391=iso6391;
+        this.iso31661=iso31661;
+        this.key=key;
+        this.name=name;
+        this.site=site;
+        this.size=size;
+        this.type= type;
+
+
+    }
+
+
+
+    public String getId_movie() {
         return id_movie;
     }
 
-    public void setId(String id_movie) {
+    public void setId_movie(String id_movie) {
         this.id_movie = id_movie;
     }
 

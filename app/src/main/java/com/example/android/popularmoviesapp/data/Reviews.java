@@ -1,6 +1,7 @@
 package com.example.android.popularmoviesapp.data;
 
 import android.arch.persistence.room.ColumnInfo;
+import android.arch.persistence.room.Entity;
 import android.arch.persistence.room.Ignore;
 import android.arch.persistence.room.PrimaryKey;
 import android.os.Parcel;
@@ -8,7 +9,7 @@ import android.os.Parcelable;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
-
+@Entity(tableName = "cache_reviews")
 public class Reviews implements Parcelable {
 
     @PrimaryKey(autoGenerate = true)
@@ -23,6 +24,15 @@ public class Reviews implements Parcelable {
     @ColumnInfo(name = "url")
     private String url;
 
+    public Reviews(int id, String author,String content,String id_content, String url){
+
+        this.id=id;
+        this.author=author;
+        this.content=content;
+        this.id_content=id_content;
+        this.url=url;
+
+    }
     @Ignore
     public  Reviews(String author ,String content,String id_content, String url){
 
@@ -37,15 +47,7 @@ public class Reviews implements Parcelable {
 
     }
 
-    public Reviews(int id, String id_movie,String iso6391,String iso31661, String key,String name, String site, Integer size,String type){
 
-        this.id=id;
-        this.author=author;
-        this.content=content;
-        this.id_content=id_content;
-        this.url=url;
-
-    }
 
     public void setId(int id){
         this.id=id;
@@ -71,11 +73,11 @@ public class Reviews implements Parcelable {
         this.content = content;
     }
 
-    public String getIdContent() {
+    public String getId_content() {
         return id_content;
     }
 
-    public void setIdContent(String id_content) {
+    public void setId_content(String id_content) {
         this.id_content = id_content;
     }
 
