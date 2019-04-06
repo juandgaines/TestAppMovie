@@ -6,8 +6,9 @@ import android.arch.persistence.room.RoomDatabase;
 import android.content.Context;
 import android.util.Log;
 
-@Database(entities = {MovieData.class},version = 1,exportSchema = false)
+@Database(entities = {MovieData.class,Reviews.class,Trailers.class,CacheMovieData.class},version = 1,exportSchema = false)
 public abstract class AppDatabase extends RoomDatabase {
+
     private static final String LOG_TAG=AppDatabase.class.getSimpleName();
     private static final Object LOCK= new Object();
     private static final String DATABASE_NAME= "movies_list";
