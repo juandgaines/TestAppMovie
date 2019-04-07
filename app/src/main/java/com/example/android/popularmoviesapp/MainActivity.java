@@ -14,6 +14,7 @@ import android.net.NetworkInfo;
 import android.os.Parcelable;
 import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
+import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.GridLayoutManager;
@@ -182,13 +183,23 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
                     mMovieAdapter = new MovieAdapter(MainActivity.this, results, width, height);
 
                     mRecyclerView.setAdapter(mMovieAdapter);
+                    showMovieDataView();
 
                 }
             });
         }
         else {
 
-            Toast.makeText(this,"Offline mode with cache",Toast.LENGTH_LONG).show();
+            final Snackbar sn=Snackbar.make(findViewById(R.id.coordinator_layout), "You are in offline mode",Snackbar.LENGTH_INDEFINITE);
+
+            sn.setAction("Ok", new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    sn.dismiss();
+                }
+            });
+
+            sn.show();
             fetchViewModel.loadLiveDataFromCache(syncConnPref).observe(this, new Observer<List<CacheMovieData>>() {
                 @Override
                 public void onChanged(@Nullable List<CacheMovieData> cacheMovieData) {
@@ -214,6 +225,7 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
 
                     mMovieAdapter = new MovieAdapter(MainActivity.this, resultListFromCache, width, height);
                     mRecyclerView.setAdapter(mMovieAdapter);
+                    showMovieDataView();
                 }
             });
 
@@ -333,7 +345,18 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
                     fetchViewModel.loadLiveData(syncConnPref);
                 }
                 else {
-                    Toast.makeText(this,"Offline mode with cache",Toast.LENGTH_LONG).show();
+                    final Snackbar sn=Snackbar.make(findViewById(R.id.coordinator_layout), "You are in offline mode",Snackbar.LENGTH_INDEFINITE);
+
+                    sn.setAction("Ok", new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            sn.dismiss();
+                        }
+                    });
+
+                    sn.show();
+
+
                     fetchViewModel.loadLiveDataFromCache(syncConnPref).observe(this, new Observer<List<CacheMovieData>>() {
                         @Override
                         public void onChanged(@Nullable List<CacheMovieData> cacheMovieData) {
@@ -356,6 +379,7 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
 
                             mMovieAdapter= new MovieAdapter(MainActivity.this,resultListFromCache,width,height);
                             mRecyclerView.setAdapter(mMovieAdapter);
+                            showMovieDataView();
                         }
                     });
                     fetchViewModel.loadLiveDataFromCache(syncConnPref);
