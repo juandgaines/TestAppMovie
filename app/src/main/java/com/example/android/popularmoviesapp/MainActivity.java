@@ -26,6 +26,8 @@ import android.view.Display;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.animation.AnimationUtils;
+import android.view.animation.LayoutAnimationController;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -185,6 +187,7 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
 
                     mRecyclerView.setAdapter(mMovieAdapter);
                     showMovieDataView();
+                    runAnimation(mRecyclerView);
 
                 }
             });
@@ -227,6 +230,7 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
                     mMovieAdapter = new MovieAdapter(MainActivity.this, resultListFromCache, width, height);
                     mRecyclerView.setAdapter(mMovieAdapter);
                     showMovieDataView();
+                    runAnimation(mRecyclerView);
                 }
             });
 
@@ -346,6 +350,7 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
 
                             mRecyclerView.setAdapter(mMovieAdapter);
                             showMovieDataView();
+                            runAnimation(mRecyclerView);
 
                         }
                     });
@@ -387,6 +392,7 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
                             mMovieAdapter= new MovieAdapter(MainActivity.this,resultListFromCache,width,height);
                             mRecyclerView.setAdapter(mMovieAdapter);
                             showMovieDataView();
+                            runAnimation(mRecyclerView);
                         }
                     });
                     fetchViewModel.loadLiveDataFromCache(syncConnPref);
@@ -442,6 +448,17 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
         super.onDestroy();
         SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
         sharedPref.unregisterOnSharedPreferenceChangeListener(this);
+    }
+
+    private void runAnimation(RecyclerView recyclerView){
+
+        Context context=recyclerView.getContext();
+        LayoutAnimationController controller= AnimationUtils.loadLayoutAnimation(context,R.anim.layout_slide_from_bottom);
+
+        recyclerView.setLayoutAnimation(controller);
+        recyclerView.getAdapter().notifyDataSetChanged();
+        recyclerView.scheduleLayoutAnimation();
+
     }
 
 
