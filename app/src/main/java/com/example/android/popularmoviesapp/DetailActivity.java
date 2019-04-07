@@ -40,6 +40,7 @@ import com.example.android.popularmoviesapp.data.Trailer;
 import com.example.android.popularmoviesapp.databinding.ActivityDetailBinding;
 import com.example.android.popularmoviesapp.network.MovieService;
 import com.example.android.popularmoviesapp.network.RetroClassMainListView;
+import com.google.android.youtube.player.YouTubePlayerView;
 import com.squareup.picasso.Picasso;
 
 import com.example.android.popularmoviesapp.data.MovieData;
@@ -94,8 +95,7 @@ public class DetailActivity extends AppCompatActivity implements TrailersAdapter
         ButterKnife.bind(this);
 
         matrix = new Matrix();
-        matrix.postScale(1.8f, 1.8f);
-        matrix.postTranslate(0,-100);
+
 
         // my_child_toolbar is defined in the layout file
         Toolbar myChildToolbar =
@@ -200,11 +200,16 @@ public class DetailActivity extends AppCompatActivity implements TrailersAdapter
 
             if (orientation == Configuration.ORIENTATION_LANDSCAPE) {
                 // In landscape
-                layoutManager= new LinearLayoutManager(this,LinearLayoutManager.VERTICAL,false);
+                layoutManager= new LinearLayoutManager(this,LinearLayoutManager.HORIZONTAL,false);
+                ((CollapsingToolbarLayout) findViewById(R.id.collapsing_toolbar_layout)).setTitle(" ");
+                matrix.postScale(1.4f, 1.4f);
+                matrix.postTranslate(-150,0);
             }
             else {
                 // In portrait
                 layoutManager= new LinearLayoutManager(this,LinearLayoutManager.HORIZONTAL,false);
+                matrix.postScale(1.8f, 1.8f);
+                matrix.postTranslate(0,-100);
             }
 
             if (mRecyclerViewState1 != null) {
@@ -285,16 +290,18 @@ public class DetailActivity extends AppCompatActivity implements TrailersAdapter
 
     @Override
     public void onClick(Trailer trailerData) {
-        Uri url =Uri.parse("https://www.youtube.com/watch?v="+ trailerData.getKey());
+        //Uri url =Uri.parse("https://www.youtube.com/watch?v="+ trailerData.getKey());
 
-        Intent intent =new Intent(Intent.ACTION_VIEW,url);
+        //Intent intent =new Intent(Intent.ACTION_VIEW,url);
 
-        intent.putExtra(Intent.EXTRA_TEXT, url.toString());
+        Intent intent  =new Intent(this, YoutubeActivityPlayer.class);
+        intent.putExtra(Intent.EXTRA_TEXT, trailerData.getKey());
 
+        startActivity(intent);
 
-        if (intent.resolveActivity(getPackageManager()) != null) {
-            startActivity(intent);
-        }
+        //if (intent.resolveActivity(getPackageManager()) != null) {
+          //  startActivity(intent);
+        //}
 
 
     }
@@ -314,7 +321,7 @@ public class DetailActivity extends AppCompatActivity implements TrailersAdapter
                     scrollRange = appBarLayout.getTotalScrollRange();
                 }
                 if (scrollRange + verticalOffset == 0) {
-                    ((CollapsingToolbarLayout) findViewById(R.id.collapsing_toolbar_layout)).setTitle(mTitleStr);
+                    ((CollapsingToolbarLayout) findViewById(R.id.collapsing_toolbar_layout)).setTitle(getResources().getString(R.string.title_activity_details));
                     isShow = true;
                 } else if(isShow) {
                     ((CollapsingToolbarLayout) findViewById(R.id.collapsing_toolbar_layout)).setTitle(" ");//carefull there should a space between double quote otherwise it wont work

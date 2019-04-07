@@ -65,11 +65,15 @@ public class MovieAdapter  extends RecyclerView.Adapter<MovieAdapter.MovieViewHo
             Picasso.with(context).load ("http://image.tmdb.org/t/p/w185/"+movieImage)
                     .resize((int) Math.round(mWidth/divisor),(int) Math.round(mHeight/divisor) )
                     .centerInside()
+                    .placeholder(R.drawable.user_placeholder)
+                    .error(R.drawable.user_placeholder)
                     .into(movieViewHolder.mMoviePosterView);
         }else{
             Picasso.with(context)
                     .load(R.drawable.not_found)
                     .resize(600,1000)
+                    .placeholder(R.drawable.user_placeholder)
+                    .error(R.drawable.user_placeholder)
                     .into(movieViewHolder.mMoviePosterView);
         }
         movieViewHolder.mTitleMovie.setText(mTitle);

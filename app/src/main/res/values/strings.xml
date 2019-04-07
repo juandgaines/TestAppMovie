@@ -25,7 +25,7 @@
     <string name="title_activity_favorites">Favorites</string>
     <string name="no_content_available">No reviews available yet.</string>
     <string name="no_trailers_available">No trailers available</string>
-    <string name="transition_image_name">pic_gritd_to_detail</string>
+    <string name="transition_image_name" translatable="false">pic_gritd_to_detail</string>
 
     <string-array name="pref_order_movies">
         <item>Most populars</item>
