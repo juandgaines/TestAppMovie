@@ -33,7 +33,7 @@ public class MovieAdapter  extends RecyclerView.Adapter<MovieAdapter.MovieViewHo
     }
 
     public interface MovieAdapterOnClickHandler {
-        void onClick(Result movieData);
+        void onClick(Result movieData,View view);
     }
 
 
@@ -112,7 +112,7 @@ public class MovieAdapter  extends RecyclerView.Adapter<MovieAdapter.MovieViewHo
         public void onClick(View view) {
             int adapterPosition=getAdapterPosition();
             Result movieData = mMovieData.get(adapterPosition);
-            mClickHandler.onClick(movieData);
+            mClickHandler.onClick(movieData,view);
         }
 
 

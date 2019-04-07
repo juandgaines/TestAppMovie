@@ -9,6 +9,7 @@
         android:id="@+id/tv_movie_image"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:transitionName="@string/transition_image_name"
         android:layout_gravity="center_horizontal"
         />
 

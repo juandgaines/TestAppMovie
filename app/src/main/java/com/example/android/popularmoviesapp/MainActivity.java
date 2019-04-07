@@ -283,7 +283,7 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
 
     }
     @Override
-    public void onClick(Result movieData) {
+    public void onClick(Result movieData,View view) {
         Context context = this;
         Class destinationClass = DetailActivity.class;
         Intent intent= new Intent(context,destinationClass);
@@ -294,9 +294,13 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
         double rate = movieData.getVoteAverage();
         String path = movieData.getPosterPath();
         int id_movie=movieData.getId();
+
+
         MovieData movie = new MovieData(title,overview,rate,release, path,id_movie);
         intent.putExtra(MovieData.PARCELABLE,movie);
-        Bundle bundle= ActivityOptions.makeSceneTransitionAnimation(this).toBundle();
+        Bundle bundle= ActivityOptions.makeSceneTransitionAnimation(this,view,
+                getResources().getString(R.string.transition_image_name)
+                ).toBundle();
         startActivity(intent,bundle);
     }
 

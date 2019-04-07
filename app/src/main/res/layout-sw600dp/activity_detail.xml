@@ -37,6 +37,7 @@
 
             <ImageView
                 android:id="@+id/movie_picture"
+                android:transitionName="@string/transition_image_name"
                 android:layout_width="291dp"
                 android:layout_height="375dp"
                 android:layout_marginStart="16dp"
