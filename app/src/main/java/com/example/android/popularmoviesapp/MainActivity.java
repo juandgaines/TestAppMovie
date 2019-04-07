@@ -1,5 +1,6 @@
 package com.example.android.popularmoviesapp;
 
+import android.app.ActivityOptions;
 import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
@@ -295,7 +296,8 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
         int id_movie=movieData.getId();
         MovieData movie = new MovieData(title,overview,rate,release, path,id_movie);
         intent.putExtra(MovieData.PARCELABLE,movie);
-        startActivity(intent);
+        Bundle bundle= ActivityOptions.makeSceneTransitionAnimation(this).toBundle();
+        startActivity(intent,bundle);
     }
 
     @Override
@@ -339,6 +341,7 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
                             mMovieAdapter = new MovieAdapter(MainActivity.this,results, width,height);
 
                             mRecyclerView.setAdapter(mMovieAdapter);
+                            showMovieDataView();
 
                         }
                     });
