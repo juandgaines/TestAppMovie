@@ -6,15 +6,20 @@ import android.arch.lifecycle.ViewModelProviders;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.databinding.DataBindingUtil;
+import android.graphics.Matrix;
 import android.graphics.Movie;
 import android.net.Uri;
 import android.os.Parcelable;
 import android.support.annotation.Nullable;
+import android.support.design.widget.AppBarLayout;
+import android.support.design.widget.CollapsingToolbarLayout;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.Toolbar;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.View;
@@ -50,7 +55,7 @@ import retrofit2.Response;
 
 public class DetailActivity extends AppCompatActivity implements TrailersAdapter.TrailerAdapterOnClickHandler{
     private static final String LOG_TAG= DetailActivity.class.getName().toString();
-    ActivityDetailBinding mBinding;
+    //ActivityDetailBinding mBinding;
     private ReviewsAdapter reviewsAdapter;
     private TrailersAdapter trailersAdapter;
     public static final String KEY_RECYCLERVIEW_1="position1";
@@ -58,6 +63,28 @@ public class DetailActivity extends AppCompatActivity implements TrailersAdapter
     private Parcelable mRecyclerViewState1;
     private Parcelable mRecyclerViewState2;
 
+    @BindView(R.id.app_bar_layout)
+    AppBarLayout appBarLayout;
+
+    @BindView(R.id.favoriteButton)ImageView favoriteButton;
+
+    @BindView(R.id.trailer_listview)RecyclerView trailerListview;
+
+    @BindView(R.id.empty_view_trailers)TextView emptyViewTrailers;
+    @BindView(R.id.reviews_listview)RecyclerView reviewsListview;
+    @BindView(R.id.empty_view_reviews)TextView emptyViewReviews;
+
+    @BindView(R.id.scrollview_detail)ScrollView scrollviewDetail;
+
+    @BindView(R.id.name_movie)TextView nameMovie;
+    @BindView(R.id.date_view)TextView dateView;
+
+    @BindView(R.id.rate_view)TextView rateView;
+
+    @BindView(R.id.overview_parts) View overviewParts;
+    @BindView(R.id.movie_picture) ImageView moviePicture;
+
+    Matrix matrix;
     AppDatabase mDb;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -65,9 +92,24 @@ public class DetailActivity extends AppCompatActivity implements TrailersAdapter
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_detail);
         ButterKnife.bind(this);
+
+        matrix = new Matrix();
+        matrix.postScale(1.8f, 1.8f);
+        matrix.postTranslate(0,-100);
+
+        // my_child_toolbar is defined in the layout file
+        Toolbar myChildToolbar =
+                (Toolbar) findViewById(R.id.app_bar);
+        setSupportActionBar(myChildToolbar);
+
+        // Get a support ActionBar corresponding to this toolbar
+        ActionBar ab = getSupportActionBar();
+
+        // Enable the Up button
+        ab.setDisplayHomeAsUpEnabled(true);
         Intent intent=getIntent();
 
-        mBinding=DataBindingUtil.setContentView(this,R.layout.activity_detail);
+        //mBinding=DataBindingUtil.setContentView(this,R.layout.activity_detail);
 
         //mBinding.
 
@@ -96,10 +138,10 @@ public class DetailActivity extends AppCompatActivity implements TrailersAdapter
                 public void onChanged(@Nullable MovieData movieData) {
                     if(viewModel.getmCurrentMovie().getValue()!=null){
 
-                        mBinding.favoriteButton.setImageDrawable(getResources().getDrawable(android.R.drawable.btn_star_big_on));
+                        favoriteButton.setImageDrawable(getResources().getDrawable(android.R.drawable.btn_star_big_on));
                     }
                     else{
-                        mBinding.favoriteButton.setImageDrawable(getResources().getDrawable(android.R.drawable.btn_star_big_off));
+                        favoriteButton.setImageDrawable(getResources().getDrawable(android.R.drawable.btn_star_big_off));
                     }
 
                     populateUI(id_movie,mTitleStr,mPathStr,mOverviewStr,mRateStr,mDateStr);
@@ -114,15 +156,15 @@ public class DetailActivity extends AppCompatActivity implements TrailersAdapter
 
                     trailersAdapter= new TrailersAdapter(DetailActivity.this,trailers);
                     //trailersAdapter.setEmptyView(R.id.empty_view_reviews);
-                    mBinding.trailerListview.setAdapter(trailersAdapter);
+                    trailerListview.setAdapter(trailersAdapter);
 
                     if(trailersAdapter.getItemCount()!=0){
-                        mBinding.trailerListview.setVisibility(View.VISIBLE);
-                        mBinding.emptyViewTrailers.setVisibility(View.GONE);
+                        trailerListview.setVisibility(View.VISIBLE);
+                        emptyViewTrailers.setVisibility(View.GONE);
                     }
                     else{
-                        mBinding.trailerListview.setVisibility(View.GONE);
-                        mBinding.emptyViewTrailers.setVisibility(View.VISIBLE);
+                        trailerListview.setVisibility(View.GONE);
+                        emptyViewTrailers.setVisibility(View.VISIBLE);
 
                     }
 
@@ -134,15 +176,15 @@ public class DetailActivity extends AppCompatActivity implements TrailersAdapter
                 public void onChanged(@Nullable List<Review> reviews) {
 
                     reviewsAdapter= new ReviewsAdapter(reviews);
-                    mBinding.reviewsListview.setAdapter(reviewsAdapter);
+                    reviewsListview.setAdapter(reviewsAdapter);
 
                     if(reviewsAdapter.getItemCount()!=0){
-                        mBinding.reviewsListview.setVisibility(View.VISIBLE);
-                        mBinding.emptyViewReviews.setVisibility(View.GONE);
+                        reviewsListview.setVisibility(View.VISIBLE);
+                        emptyViewReviews.setVisibility(View.GONE);
                     }
                     else{
-                        mBinding.reviewsListview.setVisibility(View.GONE);
-                        mBinding.emptyViewReviews.setVisibility(View.VISIBLE);
+                        reviewsListview.setVisibility(View.GONE);
+                        emptyViewReviews.setVisibility(View.VISIBLE);
 
                     }
 
@@ -176,15 +218,15 @@ public class DetailActivity extends AppCompatActivity implements TrailersAdapter
             }
 
 
-            mBinding.reviewsListview.setLayoutManager(layoutManager2);
-            mBinding.trailerListview.setLayoutManager(layoutManager);
+            reviewsListview.setLayoutManager(layoutManager2);
+            trailerListview.setLayoutManager(layoutManager);
 
 
 
-            mBinding.trailerListview.setHasFixedSize(true);
-            mBinding.reviewsListview.setHasFixedSize(true);
+            trailerListview.setHasFixedSize(true);
+           reviewsListview.setHasFixedSize(true);
 
-            mBinding.favoriteButton.setOnClickListener(new View.OnClickListener() {
+            favoriteButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(final View view) {
 
@@ -219,8 +261,8 @@ public class DetailActivity extends AppCompatActivity implements TrailersAdapter
         // This bundle will be passed to onCreate if the process is
         // killed and restarted.
         super.onSaveInstanceState(savedInstanceState);
-        savedInstanceState.putParcelable(KEY_RECYCLERVIEW_1,mBinding.trailerListview.getLayoutManager().onSaveInstanceState());
-        savedInstanceState.putParcelable(KEY_RECYCLERVIEW_2, mBinding.reviewsListview.getLayoutManager().onSaveInstanceState());// get current recycle view position here.
+        savedInstanceState.putParcelable(KEY_RECYCLERVIEW_1,trailerListview.getLayoutManager().onSaveInstanceState());
+        savedInstanceState.putParcelable(KEY_RECYCLERVIEW_2, reviewsListview.getLayoutManager().onSaveInstanceState());// get current recycle view position here.
 
     }
 
@@ -238,7 +280,7 @@ public class DetailActivity extends AppCompatActivity implements TrailersAdapter
     @Override
     protected void onResume() {
         super.onResume();
-        mBinding.scrollviewDetail.scrollTo(0,0);
+        scrollviewDetail.scrollTo(0,0);
     }
 
     @Override
@@ -257,50 +299,73 @@ public class DetailActivity extends AppCompatActivity implements TrailersAdapter
 
     }
 
-    private void  populateUI(int id_movie,String mTitleStr,String mPathStr,String mOverviewStr,String mRateStr, String mDateStr){
-        mBinding.nameMovie.setText(mTitleStr);
+    private void  populateUI(int id_movie, final String mTitleStr, String mPathStr, String mOverviewStr, String mRateStr, String mDateStr){
+        nameMovie.setText(mTitleStr);
+
+
+        AppBarLayout appBarLayout = (AppBarLayout) findViewById(R.id.app_bar_layout);
+        appBarLayout.addOnOffsetChangedListener(new AppBarLayout.OnOffsetChangedListener() {
+            boolean isShow = true;
+            int scrollRange = -1;
+
+            @Override
+            public void onOffsetChanged(AppBarLayout appBarLayout, int verticalOffset) {
+                if (scrollRange == -1) {
+                    scrollRange = appBarLayout.getTotalScrollRange();
+                }
+                if (scrollRange + verticalOffset == 0) {
+                    ((CollapsingToolbarLayout) findViewById(R.id.collapsing_toolbar_layout)).setTitle(mTitleStr);
+                    isShow = true;
+                } else if(isShow) {
+                    ((CollapsingToolbarLayout) findViewById(R.id.collapsing_toolbar_layout)).setTitle(" ");//carefull there should a space between double quote otherwise it wont work
+                    isShow = false;
+                }
+            }
+        });
 
         Log.v(LOG_TAG,"value of date "+mDateStr);
         if(mDateStr==null|| mDateStr.equals("")) {
             //mDateStr= getResources().getString(R.string.error_date_message);
-            mBinding.dateView.setText(getResources().getString(R.string.error_date_message));
+            dateView.setText(getResources().getString(R.string.error_date_message));
         }
         else{
-            mBinding.dateView.setText(mDateStr);
+            dateView.setText(mDateStr);
         }
 
         Log.v(LOG_TAG,"value of rate "+mRateStr);
         if(mRateStr!=null || mRateStr.equals("")){
-            mBinding.rateView.setText(mRateStr+"/10");
+            rateView.setText(mRateStr+"/10");
         }
         else{
-            mBinding.rateView.setText(getResources().getString(R.string.error_rate_message));
+            rateView.setText(getResources().getString(R.string.error_rate_message));
         }
         Log.v(LOG_TAG,"value of overview "+mOverviewStr);
         if(mOverviewStr==null|| mOverviewStr.equals("")){
 
-            ((TextView)mBinding.overviewParts.findViewById(R.id.Overview_view)).setText(getResources().getString(R.string.error_overview_message));
+            ((TextView)overviewParts.findViewById(R.id.Overview_view)).setText(getResources().getString(R.string.error_overview_message));
         }
         else{
-            ((TextView)mBinding.overviewParts.findViewById(R.id.Overview_view)).setText(mOverviewStr);
+            ((TextView)overviewParts.findViewById(R.id.Overview_view)).setText(mOverviewStr);
         }
 
 
         Log.v(LOG_TAG,"value of post: "+mPathStr);
 
 
+        moviePicture.setImageMatrix(matrix);
+
         if(!mPathStr.equals("null")){
             Picasso.with(this)
                     .load(MovieData.BASE_LINK +mPathStr)
                     .resize(600,1000)
                     .centerInside()
-                    .into(mBinding.moviePicture);
+                    .into(moviePicture);
         }
         else{
             Picasso.with(this)
                     .load(R.drawable.not_found)
                     .resize(600,800)
-                    .into(mBinding.moviePicture);
+                    .into(moviePicture);
         }
     }
 }
