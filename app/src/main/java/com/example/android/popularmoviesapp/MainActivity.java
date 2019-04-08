@@ -1,9 +1,11 @@
 package com.example.android.popularmoviesapp;
 
 import android.app.ActivityOptions;
+import android.app.SearchManager;
 import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -16,14 +18,17 @@ import android.os.Parcelable;
 import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
+import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.SearchView;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Display;
 import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.animation.AnimationUtils;
@@ -41,6 +46,8 @@ import java.util.ArrayList;
 import java.util.List;
 import butterknife.BindView;
 import butterknife.ButterKnife;
+
+
 
 
 public class MainActivity extends AppCompatActivity implements MovieAdapter.MovieAdapterOnClickHandler
@@ -75,8 +82,10 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
 
-
-
+        Intent intent=getIntent();
+        if(intent!=null ) {
+            handleIntent(intent);
+        }
 
         FetchMode();
     }
@@ -415,8 +424,50 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.main, menu);
-        return true;
+        MenuInflater searchInflater =getMenuInflater();
+        searchInflater.inflate(R.menu.main, menu);
+
+        MenuItem searchItem= menu.findItem(R.id.action_search);
+        SearchView searchView= (SearchView) searchItem.getActionView();
+
+
+        SearchManager searchManager=(SearchManager) getSystemService(Context.SEARCH_SERVICE);
+        ComponentName componentName= new ComponentName(this,MainActivity.class);
+        searchView.setSearchableInfo(searchManager.getSearchableInfo(componentName));
+
+
+        MenuItemCompat.setOnActionExpandListener(searchItem, new MenuItemCompat.OnActionExpandListener() {
+            @Override
+            public boolean onMenuItemActionExpand(MenuItem item) {
+
+                return true;
+            }
+
+            @Override
+            public boolean onMenuItemActionCollapse(MenuItem item) {
+
+                mMovieAdapter.restartSearch();
+                return true;
+            }
+        });
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String s) {
+                //Toast.makeText(MainActivity.this,"Enviar",Toast.LENGTH_LONG).show();
+
+
+                return false;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String s) {
+                mMovieAdapter.getFilter().filter(s);
+
+                return false;
+            }
+        });
+
+        return super.onCreateOptionsMenu(menu);
     }
 
     @Override
@@ -429,6 +480,7 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
             startActivity(startIntentSettings);
             return true;
         }
+
         return super.onOptionsItemSelected(item);
     }
 
@@ -459,6 +511,19 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
         recyclerView.getAdapter().notifyDataSetChanged();
         recyclerView.scheduleLayoutAnimation();
 
+    }
+
+    private void handleIntent(Intent intent){
+        if(Intent.ACTION_SEARCH.equals(intent.getAction())){
+            String query= intent.getStringExtra(SearchManager.QUERY);
+            mMovieAdapter.getFilter().filter(query);
+        }
+    }
+
+    @Override
+    protected void onNewIntent(Intent intent) {
+        setIntent(intent);
+        handleIntent(intent);
     }
 
 

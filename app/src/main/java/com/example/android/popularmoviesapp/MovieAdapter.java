@@ -8,19 +8,23 @@ import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Filter;
+import android.widget.Filterable;
 import android.widget.ImageView;
 import android.widget.TextView;
 import com.example.android.popularmoviesapp.data.Result;
 import com.squareup.picasso.Picasso;
 
+import java.util.ArrayList;
 import java.util.List;
 
 
-public class MovieAdapter  extends RecyclerView.Adapter<MovieAdapter.MovieViewHolder> {
+public class MovieAdapter  extends RecyclerView.Adapter<MovieAdapter.MovieViewHolder> implements Filterable {
 
     public final static String LOG_TAG= MovieAdapter.class.getName().toString();
     private Context context;
     private List<Result> mMovieData;
+    private List<Result> mMovieDataFull;
     private final MovieAdapterOnClickHandler mClickHandler;
     private int mWidth;
     private int mHeight;
@@ -28,9 +32,55 @@ public class MovieAdapter  extends RecyclerView.Adapter<MovieAdapter.MovieViewHo
     public MovieAdapter(MovieAdapterOnClickHandler clickHandler, List<Result> movieFetchedData,int width,int height) {
         mClickHandler =  clickHandler;
         setMovieData(movieFetchedData);
+        mMovieDataFull= new ArrayList<Result>(movieFetchedData);
+
         mWidth=width;
         mHeight=height;
     }
+
+    public void restartSearch(){
+
+         mMovieData.clear();
+         mMovieData.addAll(mMovieDataFull);
+         notifyDataSetChanged();
+    }
+
+    @Override
+    public Filter getFilter() {
+        return exampleFilter;
+    }
+
+    private Filter exampleFilter= new Filter() {
+        @Override
+        protected FilterResults performFiltering(CharSequence charSequence) {
+
+            List<Result> filteredMovieData= new ArrayList<Result>();
+
+            if(charSequence==null || charSequence.length()==0 ||charSequence.equals("")){
+
+                filteredMovieData.addAll(mMovieDataFull);
+            }
+            else {
+                String filterPattern=charSequence.toString().toLowerCase().trim();
+                for (Result item:mMovieDataFull){
+                    if(item.getOriginalTitle().toLowerCase().contains(filterPattern)){
+                        filteredMovieData.add(item);
+                    }
+                }
+            }
+            FilterResults filterResults= new FilterResults();
+            filterResults.values=filteredMovieData;
+            return filterResults;
+        }
+
+        @Override
+        protected void publishResults(CharSequence charSequence, FilterResults filterResults) {
+
+            mMovieData.clear();
+            mMovieData.addAll((List) filterResults.values);
+            notifyDataSetChanged();
+        }
+    };
 
     public interface MovieAdapterOnClickHandler {
         void onClick(Result movieData,View view);
@@ -88,6 +138,7 @@ public class MovieAdapter  extends RecyclerView.Adapter<MovieAdapter.MovieViewHo
     }
     public void setMovieData(List<Result> movieData) {
         mMovieData = movieData;
+        mMovieDataFull=movieData;
         notifyDataSetChanged();
     }
 
