@@ -17,6 +17,7 @@ Se debe reemplazar API_MOVIES o API_YOUTUBE por una cadena de la siguiente forma
 
 ## Respuestas
 ### 1-) Capas
+El esquema se trabaja de acuerdo a lo planteado por Google: https://developer.android.com/jetpack/docs/guide
 1. Room: Se utiliza esta libreria para guardar los datos descargados desde internet. Room hace parte de  los Android Architecture Components de Android y permite el llamado de comandos SQLite de manera sencilla.
 1. Retrofit: Cliente Http para la descarga de datos desde el servidor de peliculas.
 1. LiveData: Para cada llamado al servidor desde Retrofit o a la base de datos se utiliza para detectar los cambios de los datos para actualizarlos en la UI correspondiente de la aplicacion. 
