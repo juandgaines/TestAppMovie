@@ -446,7 +446,23 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
             @Override
             public boolean onMenuItemActionCollapse(MenuItem item) {
 
+
+                SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(MainActivity.this);
+                String syncConnPref = sharedPref.getString(getResources().getString(R.string.pref_order_key),"");
                 mMovieAdapter.restartSearch();
+                fetchViewModel.getResultsLiveData(syncConnPref,apiKey).observe(MainActivity.this, new Observer<List<Result>>() {
+                    @Override
+                    public void onChanged(@Nullable List<Result> results) {
+
+                        mMovieAdapter = new MovieAdapter(MainActivity.this,results, width,height);
+
+                        mRecyclerView.setAdapter(mMovieAdapter);
+                        showMovieDataView();
+                        runAnimation(mRecyclerView);
+
+                    }
+                });
+                fetchViewModel.loadLiveData(syncConnPref);
                 return true;
             }
         });
@@ -455,7 +471,19 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
             public boolean onQueryTextSubmit(String s) {
                 //Toast.makeText(MainActivity.this,"Enviar",Toast.LENGTH_LONG).show();
 
+                fetchViewModel.getResultsLiveDataByQuery(s,apiKey).observe(MainActivity.this, new Observer<List<Result>>() {
+                    @Override
+                    public void onChanged(@Nullable List<Result> results) {
 
+                        mMovieAdapter = new MovieAdapter(MainActivity.this,results, width,height);
+
+                        mRecyclerView.setAdapter(mMovieAdapter);
+                        showMovieDataView();
+                        runAnimation(mRecyclerView);
+
+                    }
+                });
+                fetchViewModel.loadLiveDataByQuery(s);
                 return false;
             }
 
@@ -516,7 +544,21 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
     private void handleIntent(Intent intent){
         if(Intent.ACTION_SEARCH.equals(intent.getAction())){
             String query= intent.getStringExtra(SearchManager.QUERY);
-            mMovieAdapter.getFilter().filter(query);
+
+            fetchViewModel.getResultsLiveDataByQuery(query,apiKey).observe(MainActivity.this, new Observer<List<Result>>() {
+                @Override
+                public void onChanged(@Nullable List<Result> results) {
+
+                    mMovieAdapter = new MovieAdapter(MainActivity.this,results, width,height);
+
+                    mRecyclerView.setAdapter(mMovieAdapter);
+                    showMovieDataView();
+                    runAnimation(mRecyclerView);
+
+                }
+            });
+            fetchViewModel.loadLiveDataByQuery(query);
+
         }
     }
 

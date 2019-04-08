@@ -32,8 +32,6 @@ public class MovieAdapter  extends RecyclerView.Adapter<MovieAdapter.MovieViewHo
     public MovieAdapter(MovieAdapterOnClickHandler clickHandler, List<Result> movieFetchedData,int width,int height) {
         mClickHandler =  clickHandler;
         setMovieData(movieFetchedData);
-        mMovieDataFull= new ArrayList<Result>(movieFetchedData);
-
         mWidth=width;
         mHeight=height;
     }
@@ -111,7 +109,7 @@ public class MovieAdapter  extends RecyclerView.Adapter<MovieAdapter.MovieViewHo
 
         float divisor= outValue.getFloat();
 
-        if (!movieImage.equals("null")){
+        if (!(movieImage==null)){
             Picasso.with(context).load ("http://image.tmdb.org/t/p/w185/"+movieImage)
                     .resize((int) Math.round(mWidth/divisor),(int) Math.round(mHeight/divisor) )
                     .centerInside()
@@ -121,7 +119,7 @@ public class MovieAdapter  extends RecyclerView.Adapter<MovieAdapter.MovieViewHo
         }else{
             Picasso.with(context)
                     .load(R.drawable.not_found)
-                    .resize(600,1000)
+                    .resize(600,700)
                     .placeholder(R.drawable.user_placeholder)
                     .error(R.drawable.user_placeholder)
                     .into(movieViewHolder.mMoviePosterView);
@@ -136,14 +134,17 @@ public class MovieAdapter  extends RecyclerView.Adapter<MovieAdapter.MovieViewHo
         if (null == mMovieData) return 0;
         return mMovieData.size();
     }
+
     public void setMovieData(List<Result> movieData) {
-        mMovieData = movieData;
-        mMovieDataFull=movieData;
+
+        mMovieData = new ArrayList<Result>(movieData);
+        mMovieDataFull=new ArrayList<Result>(movieData);
         notifyDataSetChanged();
     }
 
     public void restartData(){
         mMovieData.clear();
+        mMovieDataFull.clear();
         notifyDataSetChanged();
     }
 
@@ -166,7 +167,7 @@ public class MovieAdapter  extends RecyclerView.Adapter<MovieAdapter.MovieViewHo
         @Override
         public void onClick(View view) {
             int adapterPosition=getAdapterPosition();
-            Result movieData = mMovieData.get(adapterPosition);
+            Result movieData = mMovieDataFull.get(adapterPosition);
             mClickHandler.onClick(movieData,view);
         }
 

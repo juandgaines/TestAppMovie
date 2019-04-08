@@ -31,6 +31,7 @@ public class FetchViewModel extends AndroidViewModel {
     private MutableLiveData<BooleanJ> mNetworkProblem;
     private LiveData<List<MovieData>> resultsLiveDataDB;
     private LiveData<List<CacheMovieData>> mCacheListMovies;
+    private MutableLiveData<List<Result>> resultsLiveDataByQuery;
 
     private  AppDatabase database;
 
@@ -60,6 +61,18 @@ public class FetchViewModel extends AndroidViewModel {
 
 
         return resultsLiveData;
+    }
+
+    public LiveData<List<Result>> getResultsLiveDataByQuery(String pref, String apiKey){
+
+        if (resultsLiveDataByQuery==null ){
+
+            resultsLiveDataByQuery=new MutableLiveData<>();
+            loadLiveDataByQuery(pref);
+        }
+
+
+        return resultsLiveDataByQuery;
     }
 
     public void initNetLiveData(){
@@ -144,6 +157,81 @@ public class FetchViewModel extends AndroidViewModel {
 
 
     }
+    public void loadLiveDataByQuery(final String pref){
+
+        MovieService movieService= RetroClassMainListView.getMovieService();
+        initNetLiveData();
+
+
+
+        if(!pref.equals("favorites")) {
+            movieService.getMoviesByQuery(pref, API_KEY).enqueue(new Callback<Results>() {
+                @Override
+                public void onResponse(Call<Results> call, Response<Results> response) {
+
+                    Log.v("Retrofit", response.toString());
+                    List<Result> res = response.body().getResults();
+
+                    for (final Result cacheMovies:res){
+                        Log.v("Retrofit-pelis", cacheMovies.toString());
+                        //int movie_id, Double rate, String title, String path,String overview,String release,String category)
+                        final int movie_id=cacheMovies.getId().intValue();
+
+
+                        AppExecutors.getsInstance().diskIO().execute(new Runnable() {
+                            @Override
+                            public void run() {
+                                CacheMovieData co=database.favoritesDao().loadCacheItemByName(movie_id);
+                                if (co==null) {
+
+                                    Double rate = cacheMovies.getVoteAverage();
+                                    String title = cacheMovies.getTitle();
+                                    String path = cacheMovies.getPosterPath();
+                                    String overview = cacheMovies.getOverview();
+                                    String release = cacheMovies.getReleaseDate();
+                                    String category = pref;
+                                    final CacheMovieData bufferObject=  new CacheMovieData(movie_id,rate,title,path,overview,release,category);
+                                    database.favoritesDao().insertMovieOnCache(bufferObject);
+
+                                }
+
+
+                            }
+                        });
+
+
+
+
+
+
+                    }
+                    resultsLiveDataByQuery.setValue(res);
+
+
+                    BooleanJ booleanJ = new BooleanJ();
+                    booleanJ.setStatus(false);
+                    mNetworkProblem.setValue(booleanJ);
+
+                }
+
+                @Override
+                public void onFailure(Call<Results> call, Throwable t) {
+                    Log.v("Retrofit", "No internet connection");
+                    BooleanJ booleanJ = new BooleanJ();
+                    booleanJ.setStatus(true);
+                    mNetworkProblem.setValue(booleanJ);
+
+                }
+            });
+        }
+        else{
+
+        }
+
+
+    }
+
+
 
     public LiveData<List<CacheMovieData>> loadLiveDataFromCache(final String pref){
 

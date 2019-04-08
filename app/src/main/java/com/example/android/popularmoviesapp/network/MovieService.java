@@ -24,6 +24,10 @@ public interface MovieService {
 
     @GET("movie/{id}/reviews")
     Call<ResultReviews>getReviews(@Path("id")int id, @Query("api_key") String apiKey);
+
+    @GET("search/movie")
+    Call<Results> getMoviesByQuery(@Query("query")String query,@Query("api_key") String apiKey);
+
 }
 
 
