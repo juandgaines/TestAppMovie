@@ -17,7 +17,7 @@ android {
         }
     }
     buildTypes.each {
-        it.buildConfigField 'String', 'OPEN_THE_MOVIE_DB_API_KEY', "API_MOVIE"
+        it.buildConfigField 'String', 'OPEN_THE_MOVIE_DB_API_KEY', "API_MOVIES"
         it.buildConfigField 'String', 'YOUTUBE_API', "API_YOUTUBE"
     }
     repositories {
