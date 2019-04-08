@@ -26,7 +26,7 @@ public interface MovieService {
     Call<ResultReviews>getReviews(@Path("id")int id, @Query("api_key") String apiKey);
 
     @GET("search/movie")
-    Call<Results> getMoviesByQuery(@Query("query")String query,@Query("api_key") String apiKey);
+    Call<Results> getMoviesByQuery(@Query("query")String query,@Query("category")String category,@Query("api_key") String apiKey);
 
 }
 

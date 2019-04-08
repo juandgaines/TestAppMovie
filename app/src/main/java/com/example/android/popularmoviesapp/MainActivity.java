@@ -1,5 +1,7 @@
 package com.example.android.popularmoviesapp;
 
+import android.app.Activity;
+import android.app.ActivityManager;
 import android.app.ActivityOptions;
 import android.app.SearchManager;
 import android.arch.lifecycle.LiveData;
@@ -213,7 +215,7 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
             });
 
             sn.show();
-            fetchViewModel.loadLiveDataFromCache(syncConnPref).observe(this, new Observer<List<CacheMovieData>>() {
+            fetchViewModel.loadLiveDataFromCache(null,syncConnPref).observe(this, new Observer<List<CacheMovieData>>() {
                 @Override
                 public void onChanged(@Nullable List<CacheMovieData> cacheMovieData) {
 
@@ -230,6 +232,7 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
                         String path = cm.getPath();
                         String overview = cm.getOverview();
                         String release = cm.getRelease();
+
                         Result obj = new Result(new Integer(movie_id), rate, title, path, overview, release);
                         Log.d(LOG_TAG, "After-BD content:"+obj.toString() );
                         resultListFromCache.add(obj);
@@ -378,7 +381,7 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
                     sn.show();
 
 
-                    fetchViewModel.loadLiveDataFromCache(syncConnPref).observe(this, new Observer<List<CacheMovieData>>() {
+                    fetchViewModel.loadLiveDataFromCache(null,syncConnPref).observe(this, new Observer<List<CacheMovieData>>() {
                         @Override
                         public void onChanged(@Nullable List<CacheMovieData> cacheMovieData) {
 
@@ -404,7 +407,7 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
                             runAnimation(mRecyclerView);
                         }
                     });
-                    fetchViewModel.loadLiveDataFromCache(syncConnPref);
+                    //fetchViewModel.loadLiveDataFromCache(syncConnPref);
 
 
                 }
@@ -450,47 +453,149 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
                 SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(MainActivity.this);
                 String syncConnPref = sharedPref.getString(getResources().getString(R.string.pref_order_key),"");
                 mMovieAdapter.restartSearch();
-                fetchViewModel.getResultsLiveData(syncConnPref,apiKey).observe(MainActivity.this, new Observer<List<Result>>() {
-                    @Override
-                    public void onChanged(@Nullable List<Result> results) {
 
-                        mMovieAdapter = new MovieAdapter(MainActivity.this,results, width,height);
+                if(isConnected) {
+                    fetchViewModel.getResultsLiveData(syncConnPref, apiKey).observe(MainActivity.this, new Observer<List<Result>>() {
+                        @Override
+                        public void onChanged(@Nullable List<Result> results) {
 
-                        mRecyclerView.setAdapter(mMovieAdapter);
-                        showMovieDataView();
-                        runAnimation(mRecyclerView);
+                            mMovieAdapter = new MovieAdapter(MainActivity.this, results, width, height);
 
-                    }
-                });
-                fetchViewModel.loadLiveData(syncConnPref);
+                            mRecyclerView.setAdapter(mMovieAdapter);
+                            showMovieDataView();
+                            runAnimation(mRecyclerView);
+
+                        }
+                    });
+                    fetchViewModel.loadLiveData(syncConnPref);
+                }
+                else {
+                    final Snackbar sn=Snackbar.make(findViewById(R.id.coordinator_layout), "You are in offline mode",Snackbar.LENGTH_INDEFINITE);
+
+                    sn.setAction("Ok", new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            sn.dismiss();
+                        }
+                    });
+
+                    sn.show();
+                    fetchViewModel.loadLiveDataFromCache(null,syncConnPref).observe(MainActivity.this, new Observer<List<CacheMovieData>>() {
+                        @Override
+                        public void onChanged(@Nullable List<CacheMovieData> cacheMovieData) {
+
+                            List<Result> resultListFromCache = new ArrayList<Result>();
+
+
+                            for (CacheMovieData cm : cacheMovieData) {
+                                Log.d(LOG_TAG, "Before-BD content:"+cm.toString() );
+                                //Result( int movie_id, Double rate, String title, String path,String overview,String release)
+                                int movie_id = cm.getMovie_id();
+                                Double rate = cm.getRate();
+                                String title = cm.getTitle();
+                                String path = cm.getPath();
+                                String overview = cm.getOverview();
+                                String release = cm.getRelease();
+
+                                Result obj = new Result(new Integer(movie_id), rate, title, path, overview, release);
+                                Log.d(LOG_TAG, "After-BD content:"+obj.toString() );
+                                resultListFromCache.add(obj);
+
+                            }
+
+                            mMovieAdapter = new MovieAdapter(MainActivity.this, resultListFromCache, width, height);
+                            mRecyclerView.setAdapter(mMovieAdapter);
+                            showMovieDataView();
+                            runAnimation(mRecyclerView);
+                        }
+                    });
+
+
+                }
+
                 return true;
             }
         });
+
+
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String s) {
                 //Toast.makeText(MainActivity.this,"Enviar",Toast.LENGTH_LONG).show();
+                PreferenceManager.setDefaultValues(MainActivity.this,R.xml.pref_general,false);
 
-                fetchViewModel.getResultsLiveDataByQuery(s,apiKey).observe(MainActivity.this, new Observer<List<Result>>() {
-                    @Override
-                    public void onChanged(@Nullable List<Result> results) {
+                SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(MainActivity.this);
+                sharedPref.registerOnSharedPreferenceChangeListener(MainActivity.this);
 
-                        mMovieAdapter = new MovieAdapter(MainActivity.this,results, width,height);
+                String syncConnPref = sharedPref.getString(getResources().getString(R.string.pref_order_key),"");
+                if (isConnected) {
+                    fetchViewModel.getResultsLiveDataByQuery(s, syncConnPref,apiKey).observe(MainActivity.this, new Observer<List<Result>>() {
+                        @Override
+                        public void onChanged(@Nullable List<Result> results) {
 
-                        mRecyclerView.setAdapter(mMovieAdapter);
-                        showMovieDataView();
-                        runAnimation(mRecyclerView);
+                            mMovieAdapter = new MovieAdapter(MainActivity.this, results, width, height);
 
-                    }
-                });
-                fetchViewModel.loadLiveDataByQuery(s);
+                            mRecyclerView.setAdapter(mMovieAdapter);
+                            showMovieDataView();
+                            runAnimation(mRecyclerView);
+
+                        }
+                    });
+                    fetchViewModel.loadLiveDataByQuery(s,syncConnPref);
+                }
+
+                else {
+
+                    final Snackbar sn=Snackbar.make(findViewById(R.id.coordinator_layout), "You are in offline mode",Snackbar.LENGTH_INDEFINITE);
+
+                    sn.setAction("Ok", new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            sn.dismiss();
+                        }
+                    });
+
+                    sn.show();
+                    fetchViewModel.loadLiveDataFromCache(s,syncConnPref).observe(MainActivity.this, new Observer<List<CacheMovieData>>() {
+                        @Override
+                        public void onChanged(@Nullable List<CacheMovieData> cacheMovieData) {
+
+                            List<Result> resultListFromCache = new ArrayList<Result>();
+
+
+
+                            for (CacheMovieData cm : cacheMovieData) {
+                                Log.d(LOG_TAG, "Before-BD content:"+cm.toString() );
+                                //Result( int movie_id, Double rate, String title, String path,String overview,String release)
+                                int movie_id = cm.getMovie_id();
+                                Double rate = cm.getRate();
+                                String title = cm.getTitle();
+                                String path = cm.getPath();
+                                String overview = cm.getOverview();
+                                String release = cm.getRelease();
+                                Result obj = new Result(new Integer(movie_id), rate, title, path, overview, release);
+                                Log.d(LOG_TAG, "After-BD content:"+obj.toString() );
+                                resultListFromCache.add(obj);
+
+                            }
+
+                            mMovieAdapter = new MovieAdapter(MainActivity.this, resultListFromCache, width, height);
+                            mRecyclerView.setAdapter(mMovieAdapter);
+                            showMovieDataView();
+                            runAnimation(mRecyclerView);
+                        }
+                    });
+
+
+                }
                 return false;
             }
 
             @Override
             public boolean onQueryTextChange(String s) {
-                mMovieAdapter.getFilter().filter(s);
-
+                if(isConnected) {
+                    mMovieAdapter.getFilter().filter(s);
+                }
                 return false;
             }
         });
@@ -545,20 +650,72 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
         if(Intent.ACTION_SEARCH.equals(intent.getAction())){
             String query= intent.getStringExtra(SearchManager.QUERY);
 
-            fetchViewModel.getResultsLiveDataByQuery(query,apiKey).observe(MainActivity.this, new Observer<List<Result>>() {
-                @Override
-                public void onChanged(@Nullable List<Result> results) {
+            PreferenceManager.setDefaultValues(MainActivity.this,R.xml.pref_general,false);
 
-                    mMovieAdapter = new MovieAdapter(MainActivity.this,results, width,height);
+            SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(MainActivity.this);
+            sharedPref.registerOnSharedPreferenceChangeListener(MainActivity.this);
 
-                    mRecyclerView.setAdapter(mMovieAdapter);
-                    showMovieDataView();
-                    runAnimation(mRecyclerView);
+            String syncConnPref = sharedPref.getString(getResources().getString(R.string.pref_order_key),"");
 
-                }
-            });
-            fetchViewModel.loadLiveDataByQuery(query);
+            if(isConnected) {
+                fetchViewModel.getResultsLiveDataByQuery(query, syncConnPref, apiKey).observe(MainActivity.this, new Observer<List<Result>>() {
+                    @Override
+                    public void onChanged(@Nullable List<Result> results) {
 
+                        mMovieAdapter = new MovieAdapter(MainActivity.this, results, width, height);
+
+                        mRecyclerView.setAdapter(mMovieAdapter);
+                        showMovieDataView();
+                        runAnimation(mRecyclerView);
+
+                    }
+                });
+                fetchViewModel.loadLiveDataByQuery(query, syncConnPref);
+            }
+            else {
+
+                final Snackbar sn=Snackbar.make(findViewById(R.id.coordinator_layout), "You are in offline mode",Snackbar.LENGTH_INDEFINITE);
+
+                sn.setAction("Ok", new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        sn.dismiss();
+                    }
+                });
+
+                sn.show();
+                fetchViewModel.loadLiveDataFromCache(query,syncConnPref).observe(MainActivity.this, new Observer<List<CacheMovieData>>() {
+                    @Override
+                    public void onChanged(@Nullable List<CacheMovieData> cacheMovieData) {
+
+                        List<Result> resultListFromCache = new ArrayList<Result>();
+
+
+
+                        for (CacheMovieData cm : cacheMovieData) {
+                            Log.d(LOG_TAG, "Before-BD content:"+cm.toString() );
+                            //Result( int movie_id, Double rate, String title, String path,String overview,String release)
+                            int movie_id = cm.getMovie_id();
+                            Double rate = cm.getRate();
+                            String title = cm.getTitle();
+                            String path = cm.getPath();
+                            String overview = cm.getOverview();
+                            String release = cm.getRelease();
+                            Result obj = new Result(new Integer(movie_id), rate, title, path, overview, release);
+                            Log.d(LOG_TAG, "After-BD content:"+obj.toString() );
+                            resultListFromCache.add(obj);
+
+                        }
+
+                        mMovieAdapter = new MovieAdapter(MainActivity.this, resultListFromCache, width, height);
+                        mRecyclerView.setAdapter(mMovieAdapter);
+                        showMovieDataView();
+                        runAnimation(mRecyclerView);
+                    }
+                });
+
+
+            }
         }
     }
 

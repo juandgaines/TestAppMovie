@@ -3,11 +3,14 @@ package com.example.android.popularmoviesapp;
 import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
+import android.content.Context;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.databinding.DataBindingUtil;
 import android.graphics.Matrix;
 import android.graphics.Movie;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Parcelable;
 import android.support.annotation.Nullable;
@@ -37,7 +40,6 @@ import com.example.android.popularmoviesapp.data.ResultReviews;
 import com.example.android.popularmoviesapp.data.ResultTrailers;
 import com.example.android.popularmoviesapp.data.Review;
 import com.example.android.popularmoviesapp.data.Trailer;
-import com.example.android.popularmoviesapp.databinding.ActivityDetailBinding;
 import com.example.android.popularmoviesapp.network.MovieService;
 import com.example.android.popularmoviesapp.network.RetroClassMainListView;
 import com.google.android.youtube.player.YouTubePlayerView;
@@ -87,6 +89,7 @@ public class DetailActivity extends AppCompatActivity implements TrailersAdapter
 
     Matrix matrix;
     AppDatabase mDb;
+    private boolean isConnected;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
@@ -95,7 +98,11 @@ public class DetailActivity extends AppCompatActivity implements TrailersAdapter
         ButterKnife.bind(this);
 
         matrix = new Matrix();
-
+        ConnectivityManager cm =
+                (ConnectivityManager) this.getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
+        isConnected = activeNetwork != null &&
+                activeNetwork.isConnectedOrConnecting();
 
         // my_child_toolbar is defined in the layout file
         Toolbar myChildToolbar =
@@ -112,6 +119,23 @@ public class DetailActivity extends AppCompatActivity implements TrailersAdapter
         //mBinding=DataBindingUtil.setContentView(this,R.layout.activity_detail);
 
         //mBinding.
+
+        if(isConnected)
+        {
+            trailerListview.setVisibility(View.VISIBLE);
+            emptyViewTrailers.setVisibility(View.GONE);
+            reviewsListview.setVisibility(View.VISIBLE);
+            emptyViewReviews.setVisibility(View.GONE);
+        }
+        else{
+            trailerListview.setVisibility(View.GONE);
+            emptyViewTrailers.setVisibility(View.VISIBLE);
+            reviewsListview.setVisibility(View.GONE);
+            emptyViewReviews.setVisibility(View.VISIBLE);
+            Toast.makeText(this,"Trailers and reviews not available while offline",Toast.LENGTH_LONG).show();
+
+        }
+
 
         mDb= AppDatabase.getsInstance(getApplicationContext());
 

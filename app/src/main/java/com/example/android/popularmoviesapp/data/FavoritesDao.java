@@ -20,6 +20,9 @@ public interface FavoritesDao {
     @Query("SELECT * FROM cache_data WHERE category=:category")
     LiveData<List<CacheMovieData>> loadAllCacheMovies(String category);
 
+    @Query("SELECT * FROM cache_data WHERE ( title LIKE :query ) COLLATE NOCASE")
+    LiveData<List<CacheMovieData>> loadAllCacheMoviesWithQuery( String query);
+
     @Query("SELECT * FROM favorites WHERE movie_id=:id")
     LiveData<MovieData> loadFavoriteItemByName(int id);
 

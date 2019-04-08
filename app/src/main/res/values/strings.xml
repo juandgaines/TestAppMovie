@@ -26,7 +26,7 @@
     <string name="no_content_available">No reviews available yet.</string>
     <string name="no_trailers_available">No trailers available</string>
     <string name="transition_image_name" translatable="false">pic_gritd_to_detail</string>
-    <string name="search_hint">Write the name of the movie....</string>
+    <string name="search_hint">Type and enter to search...</string>
     <string name="action_search">search</string>
 
     <string-array name="pref_order_movies">

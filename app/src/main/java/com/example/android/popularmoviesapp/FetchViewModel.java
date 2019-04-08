@@ -63,12 +63,12 @@ public class FetchViewModel extends AndroidViewModel {
         return resultsLiveData;
     }
 
-    public LiveData<List<Result>> getResultsLiveDataByQuery(String pref, String apiKey){
+    public LiveData<List<Result>> getResultsLiveDataByQuery(String query, String category,String apiKey){
 
         if (resultsLiveDataByQuery==null ){
 
             resultsLiveDataByQuery=new MutableLiveData<>();
-            loadLiveDataByQuery(pref);
+            loadLiveDataByQuery(query,category);
         }
 
 
@@ -95,8 +95,6 @@ public class FetchViewModel extends AndroidViewModel {
 
                     Log.v("Retrofit", response.toString());
                     List<Result> res = response.body().getResults();
-
-
 
                     for (final Result cacheMovies:res){
 
@@ -127,10 +125,6 @@ public class FetchViewModel extends AndroidViewModel {
                         });
 
 
-
-
-
-
                     }
                     resultsLiveData.setValue(res);
 
@@ -157,15 +151,15 @@ public class FetchViewModel extends AndroidViewModel {
 
 
     }
-    public void loadLiveDataByQuery(final String pref){
+    public void loadLiveDataByQuery(final String query,final String categoryM){
 
         MovieService movieService= RetroClassMainListView.getMovieService();
         initNetLiveData();
 
 
 
-        if(!pref.equals("favorites")) {
-            movieService.getMoviesByQuery(pref, API_KEY).enqueue(new Callback<Results>() {
+        if(!categoryM.equals("favorites")) {
+            movieService.getMoviesByQuery(query, categoryM,API_KEY).enqueue(new Callback<Results>() {
                 @Override
                 public void onResponse(Call<Results> call, Response<Results> response) {
 
@@ -189,7 +183,7 @@ public class FetchViewModel extends AndroidViewModel {
                                     String path = cacheMovies.getPosterPath();
                                     String overview = cacheMovies.getOverview();
                                     String release = cacheMovies.getReleaseDate();
-                                    String category = pref;
+                                    String category = categoryM;
                                     final CacheMovieData bufferObject=  new CacheMovieData(movie_id,rate,title,path,overview,release,category);
                                     database.favoritesDao().insertMovieOnCache(bufferObject);
 
@@ -198,10 +192,6 @@ public class FetchViewModel extends AndroidViewModel {
 
                             }
                         });
-
-
-
-
 
 
                     }
@@ -233,10 +223,22 @@ public class FetchViewModel extends AndroidViewModel {
 
 
 
-    public LiveData<List<CacheMovieData>> loadLiveDataFromCache(final String pref){
+    public LiveData<List<CacheMovieData>> loadLiveDataFromCache(final String query,final String pref){
+
+        if(query==null){
 
 
-        mCacheListMovies= database.favoritesDao().loadAllCacheMovies(pref);
+                    mCacheListMovies= database.favoritesDao().loadAllCacheMovies(pref);
+
+
+        }
+        else if (query!=null){
+
+                    String mQuery= new String("%" +query+ "%");
+                    mCacheListMovies= database.favoritesDao().loadAllCacheMoviesWithQuery(mQuery);
+
+        }
+
 
         return mCacheListMovies;
 

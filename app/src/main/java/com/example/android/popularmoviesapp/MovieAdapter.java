@@ -75,6 +75,7 @@ public class MovieAdapter  extends RecyclerView.Adapter<MovieAdapter.MovieViewHo
         protected void publishResults(CharSequence charSequence, FilterResults filterResults) {
 
             mMovieData.clear();
+
             mMovieData.addAll((List) filterResults.values);
             notifyDataSetChanged();
         }
