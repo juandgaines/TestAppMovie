@@ -24,41 +24,55 @@ Se debe reemplazar API_MOVIES o API_YOUTUBE por una cadena de la siguiente forma
 ### 2-) Clases
 
 1. data/
-   1. AppDatabase
-   1. AppExecutors
-   1. CacheMovieData
-   1. FavoritesDao
-   1. MovieData
-   1. Result
-   1. ResultReviews
-   1. Results
-   1. ResultTrailers
-   1. Review
-   1. Reviews
-   1. Trailer
-   1. Trailers
+   1. AppDatabase: Clase encardada de crear un instancia singleton para gestionar la base de datos utilizando Room.
+   1. AppExecutors: Clase encargada de generar Executors para ejecutar las operaciones CRUD para la base de datos en hilos.
+   1. CacheMovieData: Tabla "cache_data" representada en Clase para ser cargada en Room
+   1. FavoritesDao: Interfaz de la Base de datos para asociar metodos a los comandos SQLite requeridos en la app
+   1. MovieData: Tabla "favorites" representada en Clase para ser cargada en Room
+   1. Result: POJO para asociar JSON correspondiente a cada pelicula descargada a traves de Retrofit
+   1. ResultReviews: POJO para asociar respuesta JSON principal obtenida desde Retrofit cuando se piden los comentarios de la pelicula
+   1. Results:POJO para asociar respuesta JSON principal obtenida desde Retrofit cuando se piden las peliculas por categoria
+   1. ResultTrailers: POJO para asociar respuesta JSON principal obtenida desde Retrofit cuando se piden los trailers de la pelicula
+   1. Review: POJO para asociar JSON correspondiente a cada comentario descargado a traves de Retrofit
+   1. Reviews: tabla "cache_reviews" Cache para guardar Reviews en Room.
+   1. Trailer: POJO para asociar JSON correspondiente a cada comentario descargado a traves de Retrofit
+   1. Trailers:tabla "cache_trailers" Cache para guardar Reviews en Room.
    
 1. network/
-   1. MovieService
-   1. RetroClassMainListView
+   1. MovieService: Interfaz que define los URL que solicitara Retrofit del servidos asociandolos a metodos
+   1. RetroClassMainListView: Clase encargada de solicitar la instancia singleton Retrofit para ser generada una unica vez.
    
-1. BooleanJ
-1. DetailActivity
-1. DetailActivityViewModel
-1. DetailActivityViewModelFactory
-1. FavoriteMovieAdapter
-1. FetchViewModel
-1. MainActivity
-1. MovieAdapter
-1. MoviePagedAdapter
-1. ResultDataSource
-1. ResultDataSourceFactory
-1. ResultViewModel
-1. ReviewsAdapter
-1. SettingsActivity
-1. SettingsFragment
-1. TrailersAdapter
-1. YoutubeActivityPlayer
+1. BooleanJ: Clase utilizada para utilizar boolean como objeto para hacerlo compatible con LiveData
+1. DetailActivity: Actividad que muestra los detalles de la pelicula.
+1. DetailActivityViewModel: Datos y operaciones encapsulados en ViewModel que seran llamados desde DetailActivity y que sobreviran a los ciclos de vida de la actividad .
+1. DetailActivityViewModelFactory: Constructor de ViewModel para DetailsActivity
+1. FavoriteMovieAdapter: Adapter para mostrar las peliculas favoritas.
+1. FetchViewModel:Datos y operaciones encapsulados en ViewModel que seran llamados desde MainActivity y que sobreviran a los ciclos de vida de la actividad .
+1. MainActivity: Actividad principal
+1. MovieAdapter: Adapter en donde se garga la respuesta online (Retrofit) u offlinw desde base de datos (Room)
+1. MoviePagedAdapter: Adapter para realizar pagination (No se alcanzo a utilizar)
+1. ResultDataSource:Fuente de datos para MoviePagerAdapter para realizar pagination (No se alcanzo a utilizar)
+1. ResultDataSourceFactory:Constructor de LiveData para MoviePagerAdapter para realizar pagination (No se alcanzo a utilizar)
+1. ResultViewModel:ViewModel de reemplazo a  FetchViewModel para paging (No se alcanzo a utilizar)
+1. ReviewsAdapter: Adapter para comentarios en DetailsActivity
+1. SettingsActivity: Actividad para preferencias
+1. SettingsFragment: fragmento de preferencias cargado a SettingFragment
+1. TrailersAdapter: Adapter para el recyclerView de Trailers en DetailsActivity
+1. YoutubeActivityPlayer: Actividad que reproduce videos de Youtube cuando se seleccionan desde el recyclerView en DetailsActivity.
+
+### 3-) Principio de responsabilidad unica
+Es un principio de programación que establece que cada clase o función debe tener una responsabilidad especifica sobre una parte única del software, y que la responsabilidad debe estar completamente encapsulada por la clase.
+
+### 4-) Caracteristicas de un buen codigo o codigo limpio
+1.  Legibilidad: el código debe ser comodo para leer. Muy bien organizado.
+1.  Simple: Debe estar modularizado y que cada clase haga una cosa de acuerdo con el principio de responsabilidad única.
+1.  Testeable: El codigo debe tener pruebas que permitan dar cuenta de las respuestas deseadas del codigo
+1.  Nombres relevantes para las variables y funciones
+1.  Evitar duplicidad en el codigo.
+
+
+
+
    
 
 
