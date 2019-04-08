@@ -11,7 +11,7 @@ Se debe reemplazar API_MOVIES o API_YOUTUBE por una cadena de la siguiente forma
 ## características
 * La aplicación solo esta diseñada para smarthphone. Tablet no esta disponible por el tiempo.<br>
 * Búsqueda por voz o por texto(online u offline).<br>
-* A pesar de que no hay "paging" la busqueda puede requerir nuevas peliculas ademas a las que se muestran en el adapter.<br>
+* A pesar de que no hay "paging" la busqueda puede requerir nuevas peliculas ademas a las que se muestran en el adapter al oprimir el buscador del teclado.<br>
 * Ajuste de preferencias de tipo de películas en el menú.<br>
 * Para salir de modo offline se debe refrescar cambiando en el menu el tipo de pelicula. Se plantea corregir esto con un BroadcastReciever que nos ayude a actualizar el estado de la red cuando este cambia.
 
